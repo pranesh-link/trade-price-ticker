@@ -60,7 +60,10 @@ export const TradePricing = () => {
           ))}
         </>
       </FlexBox>
-      <PriceTable feedResponses={pairFeedResponses} />
+      <PriceTable
+        feedResponses={pairFeedResponses}
+        currencyPair={currentPair}
+      />
     </TickerWrap>
   );
 };
@@ -70,6 +73,7 @@ const TickerWrap = styled.div`
     margin: 35px 0;
     .navbar-brand {
       font-size: 25px;
+      font-weight: bold;
     }
   }
   button {
@@ -95,6 +99,7 @@ const TickerWrap = styled.div`
         background-color: green;
         border-color: transparent;
         color: white;
+        font-weight: bold;
       }
     }
   }

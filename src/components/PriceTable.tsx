@@ -5,13 +5,18 @@ import "react-table/react-table.css";
 import classNames from "classnames";
 import styled from "styled-components";
 import { FlexBox } from "./Elements";
+import { CURRENCY_PAIRS } from "./Constants";
 
 interface IPriceTableProps {
   feedResponses: IFeedResponse[];
+  currencyPair: string;
 }
 
 const PriceTable = (props: IPriceTableProps) => {
-  const { feedResponses } = props;
+  const { feedResponses, currencyPair } = props;
+  const currencyPairData = CURRENCY_PAIRS.find(
+    (pair) => pair.pair === currencyPair
+  );
   const isHigh = (dataKey: keyof IMarketTickRecord, index: number) => {
     const { payload: currentFeedPayload } = feedResponses[index];
     const currentFeedData = currentFeedPayload[dataKey];
@@ -53,9 +58,10 @@ const PriceTable = (props: IPriceTableProps) => {
             ) : (
               <span className="arrow">&#8595;</span>
             )}
-            {payload.amount}
+            <span>{payload.amount}</span>
           </FlexBox>
         ),
+        baseCurrency: currencyPairData?.baseCurrency,
         exchange: payload.exchange.toUpperCase(),
         last: payload.last,
         high: payload.high,
@@ -77,7 +83,7 @@ const PriceTable = (props: IPriceTableProps) => {
             ) : (
               <span className="arrow">&#8595;</span>
             )}
-            {payload.volume}
+            <span> {payload.volume}</span>
           </FlexBox>
         ),
         vwap: (
@@ -93,7 +99,9 @@ const PriceTable = (props: IPriceTableProps) => {
             ) : (
               <span className="arrow">&#8595;</span>
             )}
-            {payload.vwap}
+            <div>{`${currencyPairData?.quoteCurrency} ${parseFloat(
+              payload.vwap.toString()
+            ).toFixed(10)}`}</div>
           </FlexBox>
         ),
       };
@@ -103,7 +111,7 @@ const PriceTable = (props: IPriceTableProps) => {
     <TABLE
       data={getRows()}
       columns={COLUMNS}
-      defaultPageSize={10}
+      defaultPageSize={25}
       className="-striped -highlight"
       NoDataComponent={NoData}
     />
@@ -126,6 +134,11 @@ const COLUMNS = [
     accessor: "amount",
   },
   {
+    Header: "Base currency",
+    accessor: "baseCurrency",
+    maxWidth: 150,
+  },
+  {
     Header: "Exchange",
     accessor: "exchange",
   },
@@ -134,12 +147,20 @@ const COLUMNS = [
     accessor: "volume",
   },
   {
-    Header: "VWAP",
+    Header: "Price",
     accessor: "vwap",
   },
 ];
 
 const TABLE = styled(ReactTable)`
+  .rt-resizable-header-content {
+    font-weight: bold;
+  }
+  ${FlexBox} {
+    span {
+      flex-basis: 30%;
+    }
+  }
   .high {
     color: green;
   }
