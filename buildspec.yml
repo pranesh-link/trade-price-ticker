@@ -1,0 +1,18 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      nodejs: 10
+    commands:
+      - npm i yarn -g
+  pre_build:
+    commands:
+      - yarn
+  build:
+    commands:
+      - yarn build
+  post_build:
+    commands:
+      - aws s3 rm s3://react-trade-price-ticker --recursive
+      - aws s3 sync ./build s3://react-trade-price-ticker --acl public-read
